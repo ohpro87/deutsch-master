@@ -8,7 +8,7 @@ import FreeChatView from './components/FreeChatView';
 
 const STORAGE_KEY = 'deutsch_master_user_stats';
 
-const App: React.FC = () => {
+export default function App() {
   const [currentTopic, setCurrentTopic] = useState<Topic | null>(null);
   const [filter, setFilter] = useState<'all' | 'grammar' | 'play'>('all');
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -31,6 +31,11 @@ const App: React.FC = () => {
   });
 
   useEffect(() => {
+    if (window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true) {
+      setIsInstallable(false);
+      return;
+    }
+
     const handleBeforeInstallPrompt = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -38,7 +43,6 @@ const App: React.FC = () => {
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
     window.addEventListener('appinstalled', () => {
       setIsInstallable(false);
       setDeferredPrompt(null);
@@ -171,7 +175,7 @@ const App: React.FC = () => {
             {isInstallable && (
               <button 
                 onClick={handleInstallClick}
-                className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-2xl font-black text-sm hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 animate-pulse"
+                className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-2xl font-black text-sm hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
               >
                 <span>📲</span>
                 התקן אפליקציה
@@ -188,7 +192,7 @@ const App: React.FC = () => {
         </div>
         
         {isInstallable && (
-          <div className="sm:hidden mt-4 p-4 bg-indigo-600 text-white rounded-2xl flex justify-between items-center shadow-lg shadow-indigo-200 animate-in slide-in-from-top-2">
+          <div className="sm:hidden mt-4 p-4 bg-indigo-600 text-white rounded-2xl flex justify-between items-center shadow-lg shadow-indigo-200">
             <span className="font-black text-sm">התקן את DeutschMaster למסך הבית!</span>
             <button 
               onClick={handleInstallClick}
@@ -203,4 +207,4 @@ const App: React.FC = () => {
       </main>
     </div>
   );
-};
+}
