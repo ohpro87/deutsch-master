@@ -1,8 +1,0 @@
-
-{
-  "name": "DeutschMaster B1 - Hebrew Edition",
-  "description": "An advanced AI-powered German learning platform for Hebrew speakers targeting B1 level. Installable as PWA.",
-  "requestFramePermissions": [
-    "microphone"
-  ]
-}
