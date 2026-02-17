@@ -1,4 +1,4 @@
-const CACHE_NAME = 'deutsch-master-v2';
+const CACHE_NAME = 'deutsch-master-v3';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -16,7 +16,9 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Simple network-first strategy to avoid 404s on assets
+  // Only handle GET requests
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
     fetch(event.request).catch(() => {
       return caches.match(event.request);
