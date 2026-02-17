@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { Topic, UserStats } from './types';
 import { TOPICS_META } from './constants';
@@ -15,7 +14,6 @@ const App: React.FC = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstallable, setIsInstallable] = useState(false);
   
-  // Initialize stats from localStorage
   const [stats, setStats] = useState<UserStats>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
@@ -32,21 +30,23 @@ const App: React.FC = () => {
     };
   });
 
-  // Handle PWA Installation Prompt
   useEffect(() => {
-    window.addEventListener('beforeinstallprompt', (e) => {
-      // Prevent Chrome 67 and earlier from automatically showing the prompt
+    const handleBeforeInstallPrompt = (e: any) => {
       e.preventDefault();
-      // Stash the event so it can be triggered later.
       setDeferredPrompt(e);
       setIsInstallable(true);
-    });
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     window.addEventListener('appinstalled', () => {
       setIsInstallable(false);
       setDeferredPrompt(null);
-      console.log('PWA was installed');
     });
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
   }, []);
 
   const handleInstallClick = async () => {
@@ -59,7 +59,6 @@ const App: React.FC = () => {
     }
   };
 
-  // Save stats whenever they change
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
   }, [stats]);
@@ -83,9 +82,8 @@ const App: React.FC = () => {
     if (!currentTopic) {
       return (
         <div className="max-w-6xl mx-auto px-6 py-12">
-          {/* Welcome Dashboard */}
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-16 gap-8">
-            <div className="text-right">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-16 gap-8 text-right">
+            <div>
               <h1 className="text-5xl font-black text-slate-900 mb-4 tracking-tight">היי, מוכן לתרגל גרמנית? 👋</h1>
               <p className="text-slate-500 text-xl font-medium">היום נתמקד בנושאי B1 מתקדמים</p>
             </div>
@@ -102,14 +100,12 @@ const App: React.FC = () => {
             </div>
           </div>
 
-          {/* Nav Filter */}
           <div className="flex flex-wrap gap-4 mb-12">
             <button onClick={() => setFilter('all')} className={`px-8 py-3 rounded-full font-black text-lg transition-all ${filter === 'all' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-slate-500 hover:bg-slate-100'}`}>הכל</button>
             <button onClick={() => setFilter('grammar')} className={`px-8 py-3 rounded-full font-black text-lg transition-all ${filter === 'grammar' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-slate-500 hover:bg-slate-100'}`}>דקדוק B1</button>
             <button onClick={() => setFilter('play')} className={`px-8 py-3 rounded-full font-black text-lg transition-all ${filter === 'play' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-slate-500 hover:bg-slate-100'}`}>אינטראקטיבי</button>
           </div>
 
-          {/* Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredTopics.map((meta) => (
               <button
@@ -131,7 +127,6 @@ const App: React.FC = () => {
             ))}
           </div>
 
-          {/* Branding */}
           <div className="mt-24 text-center pb-8 border-t border-slate-100 pt-12">
             <p className="text-slate-400 font-bold mb-4">מאחלים לך למידה מהנה ופורייה!</p>
             <a 
@@ -176,7 +171,7 @@ const App: React.FC = () => {
             {isInstallable && (
               <button 
                 onClick={handleInstallClick}
-                className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-2xl font-black text-sm hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 animate-bounce"
+                className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-2xl font-black text-sm hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 animate-pulse"
               >
                 <span>📲</span>
                 התקן אפליקציה
@@ -192,13 +187,12 @@ const App: React.FC = () => {
           </div>
         </div>
         
-        {/* Mobile Install Bar */}
         {isInstallable && (
-          <div className="sm:hidden mt-4 p-4 bg-indigo-50 border border-indigo-100 rounded-2xl flex justify-between items-center">
-            <span className="text-indigo-900 font-black text-sm">התקן את האפליקציה למסך הבית!</span>
+          <div className="sm:hidden mt-4 p-4 bg-indigo-600 text-white rounded-2xl flex justify-between items-center shadow-lg shadow-indigo-200 animate-in slide-in-from-top-2">
+            <span className="font-black text-sm">התקן את DeutschMaster למסך הבית!</span>
             <button 
               onClick={handleInstallClick}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-xl font-black text-xs"
+              className="bg-white text-indigo-600 px-4 py-2 rounded-xl font-black text-xs"
             >התקן</button>
           </div>
         )}
@@ -210,5 +204,3 @@ const App: React.FC = () => {
     </div>
   );
 };
-
-export default App;
